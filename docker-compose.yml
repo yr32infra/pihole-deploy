@@ -57,7 +57,7 @@ services:
 
 
   cloudflared:
-    image: cloudflare/cloudflared:2022.11.0@sha256:807f9b7516e9892cfc3c2c0eecd71a99ac9aef1649b771c2bff868241a86eb04
+    image: cloudflare/cloudflared:2022.12.1@sha256:7899243ca86bd6cdd4eaef330cd58f8abbf364a1d1ba9bee2087a21b9d1e825d
     hostname: cloudflared
     container_name: pihole__cloudflared
     restart: unless-stopped
