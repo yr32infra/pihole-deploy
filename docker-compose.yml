@@ -1,0 +1,95 @@
+version: '3.9'
+services:
+  pihole:
+    image: pihole/pihole:2023.05.2@sha256:06790d4a2409ef65bd2415e0422deb3a242119a43e33f4c9e8b97ca586017743
+    hostname: pihole
+    container_name: pihole__pihole
+    restart: unless-stopped
+
+    environment:
+      TZ: 'Asia/Tokyo'
+      WEBPASSWORD: ${WEBPASSWORD}
+
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+
+    expose:
+      - 80
+
+    volumes:
+      - type: volume
+        source: pihole_data
+        target: /etc/pihole
+
+      - type: volume
+        source: dnsmasq_data
+        target: /etc/dnsmasq.d
+
+    networks:
+      - default
+
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+  nginx:
+    image: nginx:1.25.1@sha256:73e957703f1266530db0aeac1fd6a3f87c1e59943f4c13eb340bb8521c6041d7
+    hostname: nginx
+    container_name: pihole__nginx
+
+    restart: unless-stopped
+
+    volumes:
+      - type: bind
+        source: ./nginx.conf
+        target: /etc/nginx/nginx.conf
+        read_only: true
+
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+    networks:
+      - default
+
+
+  cloudflared:
+    image: cloudflare/cloudflared:2022.11.0@sha256:807f9b7516e9892cfc3c2c0eecd71a99ac9aef1649b771c2bff868241a86eb04
+    hostname: cloudflared
+    container_name: pihole__cloudflared
+    restart: unless-stopped
+
+    environment:
+      TUNNEL_METRICS: 0.0.0.0:9126
+      TUNNEL_LOGFILE: /dev/stdout
+
+    command: tunnel run --token ${TUNNEL_TOKEN}
+
+    networks:
+      default:
+      prometheus__cloudflared:
+        aliases:
+          - pihole__cloudflared
+
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+
+volumes:
+  dnsmasq_data:
+    name: pihole__dnsmasq_data
+
+  pihole_data:
+    name: pihole__pihole_data
+
+networks:
+  default:
+    name: pihole__default
+
+  prometheus__cloudflared:
+    name: prometheus__cloudflared
+    external: true
