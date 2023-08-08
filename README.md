@@ -1,2 +1,2 @@
-# tyan0proxy-deploy
+# pihole-deploy
 Deployed on: mitou (compose-cd)
