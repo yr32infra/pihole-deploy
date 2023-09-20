@@ -35,7 +35,7 @@ services:
           memory: 512m
 
   nginx:
-    image: nginx:1.25.2@sha256:112b224f9d7f74ac22211c70108f4328c80be7eb2768f7ee6ace6b120fbaf593
+    image: nginx:1.25.2@sha256:7e50678fd9c5e7d4a8a51552e5b55934f4ab43b3539f5b33101bd314bdb01092
     hostname: nginx
     container_name: pihole__nginx
 
